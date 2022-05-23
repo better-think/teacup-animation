@@ -25,24 +25,19 @@ const TeaCup: FC<IProps> = ({
 
 
     useEffect(() => {
+        const handleScrollEvent = () => {
+            const totalScrollH = document.body.scrollHeight - window.innerHeight;
+            const percent = window.scrollY / totalScrollH;
+            let h = 100 - cupBottomH - 33 * percent;
+            setTeasHPercent(h);
+        }
         handleScrollEvent();
         window.addEventListener("scroll", handleScrollEvent);
         return () => {
             window.removeEventListener("scroll", handleScrollEvent)
         }
-    }, [])
-
-    const getTeaHPercent = (percent: number) => {
-        let h = 100 - cupBottomH - 33 * percent;
-        setTeasHPercent(h);
-    }
+    }, [cupBottomH])
     
-    const handleScrollEvent = () => {
-        const totalScrollH = document.body.scrollHeight - window.innerHeight;
-        const percent = window.scrollY / totalScrollH;
-        getTeaHPercent(percent);
-    }
-
     const style = {
         width,
         height
