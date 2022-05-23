@@ -55,16 +55,14 @@ const TeaCup: FC<IProps> = ({
 
     const chartsElement: JSX.Element[] | undefined = useMemo(() => {
         if(!data) return;
-        let charts: JSX.Element[] = [];
         let allPercent: number = 0;
-        data.map((chartData) => {
+        let charts: JSX.Element[] = data.map((chartData) => {
             allPercent += chartData.percent;
             let style = {
                 height: `${chartData.percent}%`,
                 backgroundColor: chartData.color
             }
-            let chart = <div className="teaCup_tea" style={style}></div>
-            charts.push(chart);
+            return <div className="teaCup_tea" style={style}></div>
         })
         const extraPercent = 100 - allPercent;
         let style = {
