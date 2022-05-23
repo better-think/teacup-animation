@@ -27,7 +27,7 @@ function App() {
         width={425} 
         height={500}
         cupBottomH={17}
-        cupMaxH={52}
+        cupMaxH={48}
         data={data}
       />
     </div>
