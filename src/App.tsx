@@ -19,15 +19,19 @@ function App() {
       percent: 30,
       color: "#62b8eb"
     },
+    {
+      name: "",
+      percent: 27,
+      color: "blue"
+    },
   ]
 
   return (
     <div className="App">
       <TeaCup 
         width={425} 
-        height={500}
-        cupBottomH={17}
-        cupMaxH={48}
+        cupBottomH={19}
+        cupMaxH={52}
         data={data}
       />
     </div>

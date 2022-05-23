@@ -8,7 +8,6 @@ interface ChartData {
 
 interface IProps {
     width: number;
-    height: number;
     cupBottomH: number;
     cupMaxH: number;
     data?: ChartData[] | undefined;
@@ -16,20 +15,34 @@ interface IProps {
 
 const TeaCup: FC<IProps> = ({
     width,
-    height,
     cupBottomH,
     cupMaxH,
     data
 }) => {
     const [teasHPercent, setTeasHPercent] = useState<number>(0);
+    const [teasCupH, setTeasCupH] = useState<number>(0);
 
+    const height = useMemo(() => {
+        return width * 1.17647
+    }, [width])
 
     useEffect(() => {
         const handleScrollEvent = () => {
             const totalScrollH = document.body.scrollHeight - window.innerHeight;
             const percent = window.scrollY / totalScrollH;
-            let h = 100 - cupBottomH - 33 * percent;
-            setTeasHPercent(h);
+            if(percent <= 0.3) {
+                if(teasHPercent) {
+                    setTeasHPercent(0);
+                }
+                let h = height * percent / 0.3;
+                setTeasCupH(h);
+            }
+            else {
+                if(teasCupH !== height) {
+                    setTeasCupH(height);
+                }
+                setTeasHPercent((percent - 0.3) / 0.7);
+            }
         }
         handleScrollEvent();
         window.addEventListener("scroll", handleScrollEvent);
@@ -44,8 +57,17 @@ const TeaCup: FC<IProps> = ({
     }
 
     const teasStyle = {
-        top: `${teasHPercent}%`,
-        height: `${ cupMaxH - cupBottomH}%`
+        height: height * (cupMaxH - cupBottomH) / 100
+    }
+
+    const maskStyle = {
+        bottom: `${cupBottomH}%`,
+        height: `${ (cupMaxH - cupBottomH) * teasHPercent }%`
+    }
+
+    const teaCupMaskStyle = {
+        width,
+        height: teasCupH
     }
 
     const chartsElement: JSX.Element[] | undefined = useMemo(() => {
@@ -57,7 +79,7 @@ const TeaCup: FC<IProps> = ({
                 height: `${chartData.percent}%`,
                 backgroundColor: chartData.color
             }
-            return <div className="teaCup_tea" style={style}></div>
+            return <div className="teaCup_tea" style={style} key={chartData.color}></div>
         })
         const extraPercent = 100 - allPercent;
         let style = {
@@ -69,10 +91,14 @@ const TeaCup: FC<IProps> = ({
         return charts;
     }, [data])
     
-    return <div className="teaCup" style={style}>
-        <div className="teaCup_background" style={style}></div>
-        <div className="teaCup_teas" style={teasStyle}>
-            { chartsElement }
+    return <div className="teaCup" style={teaCupMaskStyle}>
+        <div className="teaCup_container" style={style}>
+            <div className="teaCup_background" style={style}></div>
+            <div className="teaCup_mask" style={maskStyle}>
+                <div className="teaCup_teas" style={teasStyle}>
+                    { chartsElement }
+                </div>
+            </div>
         </div>
     </div>
 }
