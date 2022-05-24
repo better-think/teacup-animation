@@ -1,7 +1,6 @@
 import React from 'react';
 import './assets/scss/components.scss';
 import TeaCup from './components/TeaCup';
-const Cup = require("./assets/img/HugMug.svg");
 
 function App() {
   let data = [
@@ -30,7 +29,9 @@ function App() {
   return (
     <div className="App">
       <TeaCup 
-        width={425} 
+        width={"30%"} 
+        maxWidth={500}
+        minWidth={300}
         cupBottomH={19}
         cupMaxH={52}
         data={data}

@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useEffect, useState } from "react";
+import React, { FC, useMemo, useEffect, useState, useRef, createRef, RefObject } from "react";
 
 interface ChartData {
     name: string;
@@ -7,39 +7,68 @@ interface ChartData {
 }
 
 interface IProps {
-    width: number;
+    width: number | string;
     cupBottomH: number;
     cupMaxH: number;
-    data?: ChartData[] | undefined;
+    maxWidth?: number;
+    minWidth?: number;
+    data: ChartData[] | undefined;
 }
 
 const TeaCup: FC<IProps> = ({
     width,
     cupBottomH,
     cupMaxH,
-    data
+    data,
+    maxWidth,
+    minWidth
 }) => {
+    const teaCup = useRef<HTMLDivElement>(null);
     const [teasHPercent, setTeasHPercent] = useState<number>(0);
     const [firstOpacity, setFirstOpacity] = useState<number>(0);
     const [secondOpacity, setSecondOpacity] = useState<number>(0);
     const [thirdOpacity, setThirdOpacity] = useState<number>(0);
     const [percent, setPercent] = useState(0);
+    const [style, setStyle] = useState<{
+        width: number | string, 
+        height: number, 
+        maxWidth: string | number, 
+        minWidth: string | number
+    }>({ width, height: 0, maxWidth: "100%", minWidth: "0" })
 
-    const height = useMemo(() => {
-        return width * 1.17647
-    }, [width])
+    useEffect(() => {
+        window.addEventListener("scroll", handleScrollEvent);
+        window.addEventListener("resize", calculateSize);
+        return () => {
+            window.removeEventListener("scroll", handleScrollEvent)
+            window.removeEventListener("resize", calculateSize);
+        }
+    }, [])
 
     useEffect(() => {
         handleScrollEvent();
-        window.addEventListener("scroll", handleScrollEvent);
-        return () => {
-            window.removeEventListener("scroll", handleScrollEvent)
-        }
+        calculateSize();
     }, [])
 
     useEffect(() => {
         handlePercent();
     }, [percent])
+
+    const calculateSize = () => {
+        let mainStyle = Object.assign({}, style);
+        console.log("=====================");
+        if(teaCup.current) {
+            if(maxWidth) {
+                mainStyle.maxWidth = maxWidth;
+            }
+            if(minWidth) {
+                mainStyle.minWidth = minWidth;
+            }
+            mainStyle.height =  teaCup.current.offsetWidth * 1.17647;
+        }
+        setStyle(mainStyle);
+        handleScrollEvent();
+    }
 
     const handleScrollEvent = () => {
         const totalScrollH = document.body.scrollHeight - window.innerHeight;
@@ -76,6 +105,7 @@ const TeaCup: FC<IProps> = ({
             setTeasHPercent(0)
         }
     }
+
     const handleSecondPath = () => {
         let opacity = (percent - 0.1) / 0.1 * 100;
         setSecondOpacity(opacity);
@@ -117,14 +147,12 @@ const TeaCup: FC<IProps> = ({
         }
     }
 
-    const style = {
-        width,
-        height
-    }
-
-    const teasStyle = {
-        height: height * (cupMaxH - cupBottomH) / 100
-    }
+    const teasStyle = useMemo(() => {
+        let teasStyle = {
+            height: style.height * (cupMaxH - cupBottomH) / 100
+        }
+        return teasStyle
+    }, [style])
 
     const maskStyle = {
         bottom: `${cupBottomH}%`,
@@ -147,11 +175,11 @@ const TeaCup: FC<IProps> = ({
             return <div className="teaCup_tea" style={style} key={chartData.color}></div>
         })
         return charts;
-    }, [data])
+    }, [data, style])
     
-    return <div className="teaCup" style={style}>
+    return <div className="teaCup" style={style} ref={teaCup}>
         <svg version="1.0" className="teaCup_background" xmlns="http://www.w3.org/2000/svg"
-            style={style} viewBox="0 0 645.000000 771.000000"
+            viewBox="0 0 645.000000 771.000000"
             preserveAspectRatio="xMidYMid meet"
         >
             <defs>
@@ -199,20 +227,22 @@ const TeaCup: FC<IProps> = ({
                 -5 5 -23 13 -40 18 -64 22 -176 102 -261 184 -290 281 -384 424 -454 689 -49
                 185 -53 247 -54 915 l-1 620 -27 46 c-22 37 -40 52 -92 78 -70 34 -113 43
                 -304 61 -150 15 -161 10 -142 -61 8 -28 13 -142 14 -314 1 -149 5 -275 8 -281
-                4 -5 11 -127 17 -269 18 -429 21 -485 37 -620 23 -189 92 -477 149 -620 94
-                -236 169 -360 333 -547 159 -180 442 -462 542 -540 103 -80 232 -161 318 -200
-                49 -22 62 -33 62 -51 0 -20 -8 -24 -93 -39 -148 -28 -219 -53 -262 -95 -48
-                -47 -68 -93 -59 -141 17 -96 43 -111 300 -175 269 -68 397 -87 664 -99 266
-                -11 1085 -4 1285 11 330 26 819 93 926 127 155 49 227 156 169 252 -11 18 -34
-                41 -51 51 -34 21 -203 67 -379 104 -63 14 -133 32 -154 41 -53 22 -49 25 154
-                128 538 275 744 471 826 786 14 53 30 103 37 111 22 26 71 39 182 46 307 18
-                514 88 760 256 184 125 280 219 335 329 39 77 47 114 66 290 30 290 -5 480
-                -130 695 -60 103 -183 223 -276 268 -114 57 -211 69 -722 96 -64 3 -122 11
-                -128 17 -6 6 -18 56 -26 110 -16 107 -9 195 21 240 31 48 10 104 -40 104 -13
-                0 -29 2 -37 5 -7 2 -71 -15 -143 -39z m523 -746 c78 -6 165 -15 192 -21 101
-                -22 233 -135 297 -256 51 -95 63 -157 63 -333 0 -259 -21 -322 -145 -438 -189
-                -177 -385 -263 -634 -279 l-104 -6 7 49 c4 27 12 78 17 114 5 36 12 308 15
-                605 4 297 10 548 15 557 10 19 37 25 94 21 22 -2 104 -8 183 -13z" fill="url(#third)"/>
+                4 -5 11 -127 17 -269 18 -429 21 -485 36 -610 8 -66 17 -155 20 -199 2 -43 9
+                -93 15 -110 28 -89 40 -135 46 -176 4 -25 24 -84 45 -131 22 -48 39 -90 39
+                -94 0 -15 93 -194 130 -250 22 -33 48 -76 59 -95 31 -56 209 -245 303 -323 29
+                -23 105 -95 168 -158 174 -173 358 -308 518 -381 49 -22 62 -33 62 -51 0 -20
+                -8 -24 -93 -39 -148 -28 -219 -53 -262 -95 -48 -47 -68 -93 -59 -141 17 -96
+                43 -111 300 -175 269 -68 397 -87 664 -99 266 -11 1085 -4 1285 11 330 26 819
+                93 926 127 155 49 227 156 169 252 -11 18 -34 41 -51 51 -34 21 -203 67 -379
+                104 -63 14 -133 32 -154 41 -53 22 -49 25 154 128 538 275 744 471 826 786 14
+                53 30 103 37 111 22 26 71 39 182 46 307 18 514 88 760 256 184 125 280 219
+                335 329 39 77 47 114 66 290 30 290 -5 480 -130 695 -60 103 -183 223 -276
+                268 -114 57 -211 69 -722 96 -64 3 -122 11 -128 17 -6 6 -18 56 -26 110 -16
+                107 -9 195 21 240 31 48 10 104 -40 104 -13 0 -29 2 -37 5 -7 2 -71 -15 -143
+                -39z m523 -746 c78 -6 165 -15 192 -21 101 -22 233 -135 297 -256 51 -95 63
+                -157 63 -333 0 -259 -21 -322 -145 -438 -189 -177 -385 -263 -634 -279 l-104
+                -6 7 49 c4 27 12 78 17 114 5 36 12 308 15 605 4 297 10 548 15 557 10 19 37
+                25 94 21 22 -2 104 -8 183 -13z" fill="url(#third)"/>
             </g>
         </svg>
         <div className="teaCup_mask" style={maskStyle}>
