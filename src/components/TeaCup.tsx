@@ -34,7 +34,7 @@ const TeaCup: FC<IProps> = ({
         height: number, 
         maxWidth: string | number, 
         minWidth: string | number
-    }>({ width, height: 0, maxWidth: "100%", minWidth: "0" })
+    }>({ width, height: 0, maxWidth: maxWidth? maxWidth: "100%", minWidth: minWidth? minWidth : 0 })
 
     useEffect(() => {
         window.addEventListener("scroll", handleScrollEvent);
@@ -56,7 +56,6 @@ const TeaCup: FC<IProps> = ({
 
     const calculateSize = () => {
         let mainStyle = Object.assign({}, style);
-        console.log("=====================");
         if(teaCup.current) {
             if(maxWidth) {
                 mainStyle.maxWidth = maxWidth;

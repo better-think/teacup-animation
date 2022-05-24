@@ -29,9 +29,9 @@ function App() {
   return (
     <div className="App">
       <TeaCup 
-        width={"30%"} 
+        width={"80%"} 
         maxWidth={500}
-        minWidth={300}
+        minWidth={200}
         cupBottomH={19}
         cupMaxH={52}
         data={data}
