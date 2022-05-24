@@ -7,22 +7,22 @@ function App() {
   let data = [
     {
       name: "",
-      percent: 25,
+      amount: 25,
       color: "#95d1b2"
     },
     {
       name: "",
-      percent: 18,
+      amount: 18,
       color: "#ed7c7c"
     },
     {
       name: "",
-      percent: 30,
+      amount: 30,
       color: "#62b8eb"
     },
     {
       name: "",
-      percent: 27,
+      amount: 27,
       color: "blue"
     },
   ]

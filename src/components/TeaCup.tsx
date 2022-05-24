@@ -2,7 +2,7 @@ import React, { FC, useMemo, useEffect, useState } from "react";
 
 interface ChartData {
     name: string;
-    percent: number;
+    amount: number;
     color: string;
 }
 
@@ -133,22 +133,19 @@ const TeaCup: FC<IProps> = ({
 
     const chartsElement: JSX.Element[] | undefined = useMemo(() => {
         if(!data) return;
-        let allPercent: number = 0;
+        const initialValue = 0;
+        const totlaAmount = data.reduce(
+            (previousValue, currentValue) => previousValue + currentValue.amount,
+            initialValue
+        );
         let charts: JSX.Element[] = data.map((chartData) => {
-            allPercent += chartData.percent;
+            let percent = (chartData.amount / totlaAmount) * 100
             let style = {
-                height: `${chartData.percent}%`,
+                height: `${percent}%`,
                 backgroundColor: chartData.color
             }
             return <div className="teaCup_tea" style={style} key={chartData.color}></div>
         })
-        const extraPercent = 100 - allPercent;
-        let style = {
-            height: `${extraPercent}%`,
-            backgroundColor: "silver"
-        }
-        let chart = <div className="teaCup_tea" style={style}></div>
-        charts.push(chart);
         return charts;
     }, [data])
     
@@ -216,13 +213,13 @@ const TeaCup: FC<IProps> = ({
                 -22 233 -135 297 -256 51 -95 63 -157 63 -333 0 -259 -21 -322 -145 -438 -189
                 -177 -385 -263 -634 -279 l-104 -6 7 49 c4 27 12 78 17 114 5 36 12 308 15
                 605 4 297 10 548 15 557 10 19 37 25 94 21 22 -2 104 -8 183 -13z" fill="url(#third)"/>
-                </g>
-            </svg>
-            <div className="teaCup_mask" style={maskStyle}>
-                <div className="teaCup_teas" style={teasStyle}>
-                    { chartsElement }
-                </div>
+            </g>
+        </svg>
+        <div className="teaCup_mask" style={maskStyle}>
+            <div className="teaCup_teas" style={teasStyle}>
+                { chartsElement }
             </div>
+        </div>
     </div>
 }
 
