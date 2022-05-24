@@ -1,6 +1,7 @@
 import React from 'react';
 import './assets/scss/components.scss';
 import TeaCup from './components/TeaCup';
+const Cup = require("./assets/img/HugMug.svg");
 
 function App() {
   let data = [
